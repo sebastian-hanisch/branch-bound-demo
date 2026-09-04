@@ -53,7 +53,8 @@ st.markdown(
     """
 Ein Lieferwagen hat ein Gewichtslimit, mehrere Pakete stehen zur Auswahl - welche Auswahl
 maximiert den Gesamtwert, ohne das Limit zu überschreiten? Das ist das klassische
-**0/1-Rucksackproblem**, hier nur als greifbares Vehikel für das eigentliche Thema:
+**0/1-Rucksackproblem** (die "0/1" steht für: jedes Paket kommt ganz mit oder bleibt ganz
+zurück - keine halben Pakete), hier nur als greifbares Vehikel für das eigentliche Thema:
 **Branch & Bound**, ein Verfahren, das die beweisbar beste Auswahl findet, ohne alle
 2ⁿ möglichen Ja/Nein-Kombinationen einzeln durchzuprobieren. Genau **wie** das gelingt, erklärt
 der aufgeklappte Abschnitt direkt darunter - bevor weiter unten der Suchbaum live dazu läuft.
@@ -98,7 +99,7 @@ st.caption("🎯 Schnellstart – ein Beispielszenario laden:")
 PRESET_HELP = {
     "Winziges Beispiel (Baum komplett sichtbar)": "4 Pakete - der komplette Suchbaum passt aufs Bild, jeder Knoten einzeln durchklickbar.",
     "Mittlere Instanz (Pruning wird sichtbar)": "10 Pakete - hier beginnt Pruning spürbar den Unterschied zu machen.",
-    "Große, unkorrelierte Instanz (starke Bound glänzt)": "20 Pakete, Wert unabhängig vom Gewicht - die LP-Bound prunt hier fast den ganzen Baum weg.",
+    "Große, unkorrelierte Instanz (starke Bound glänzt)": "20 Pakete, Wert unabhängig vom Gewicht - die LP-Bound schneidet hier fast den ganzen Baum weg.",
     "Große, korrelierte Instanz (Bound-Vorteil schrumpft)": "20 Pakete, Wert ≈ Gewicht - die LP-Bound hilft hier immer noch deutlich, aber spürbar weniger als bei unabhängigen Werten.",
 }
 preset_cols = st.columns(len(C.PRESETS))
@@ -122,8 +123,9 @@ with st.sidebar:
     )
     correlation = st.slider(
         "Korrelation Wert/Gewicht", *bounds("correlation_slider"), key="correlation_slider",
-        help="0 = Wert unabhängig vom Gewicht (leicht zu prunen). 1 = wertvolle Pakete sind auch "
-        "die schweren (klassische 'strongly correlated'-Instanz, notorisch schwer für Branch & Bound).",
+        help="0 = Wert unabhängig vom Gewicht (die Bound schneidet hier leicht viele Äste weg). "
+        "1 = wertvolle Pakete sind auch die schweren (klassische 'strongly correlated'-Instanz, "
+        "notorisch schwer für Branch & Bound - selbst eine gute Bound hilft hier weniger).",
     )
     seed = st.number_input("Zufalls-Seed", *bounds("seed_input"), key="seed_input", step=1)
 
@@ -131,10 +133,12 @@ with st.sidebar:
     use_strong_bound = st.checkbox(
         "Starke Bound verwenden (LP-Relaxierung)",
         key="use_strong_bound_toggle",
-        help="An: bricht ab, wenn die fraktionale (LP-)Lösung ab hier schon nicht mehr besser "
-        "sein kann als der bisher beste Fund. Aus: bricht nur ab, wenn selbst alle restlichen "
-        "Pakete gratis genommen nicht mehr helfen würden - eine gültige, aber sehr lockere "
-        "Schranke, die kaum etwas abschneidet.",
+        help="LP-Relaxierung: rechnet probeweise mit Bruchteilen eines Pakets statt nur ganz/gar "
+        "nicht - dadurch lässt sich die Obergrenze eng an das wirklich Erreichbare heranrechnen. "
+        "An: bricht ab, wenn selbst diese optimistische Bruchteil-Lösung ab hier schon nicht mehr "
+        "besser sein kann als der bisher beste Fund. Aus: bricht nur ab, wenn selbst alle "
+        "restlichen Pakete gratis genommen nicht mehr helfen würden - eine gültige, aber sehr "
+        "lockere Schranke, die kaum etwas abschneidet.",
     )
 
     st.button(
@@ -204,13 +208,32 @@ else:
 
 live = stats_up_to_step(result, step)
 lm1, lm2, lm3, lm4 = st.columns(4)
-lm1.metric("Besuchte Knoten (bisher)", f"{live['nodes_so_far']:,}")
-lm2.metric("Gestutzt (Bound)", f"{live['pruned_bound']:,}")
-lm3.metric("Gestutzt (zu schwer)", f"{live['pruned_infeasible']:,}")
-lm4.metric("Bester Fund bisher", live["current_best"])
+lm1.metric(
+    "Besuchte Knoten (bisher)", f"{live['nodes_so_far']:,}",
+    help="Jeder Knoten ist eine Teil-Entscheidung: ein weiteres Paket wurde probeweise "
+    "aufgenommen oder ausgelassen.",
+)
+lm2.metric(
+    "Gestutzt (Bound)", f"{live['pruned_bound']:,}",
+    help="Äste, die abgebrochen wurden, weil die Bound (optimistische Obergrenze für diesen "
+    "Ast) nicht besser war als der bisher beste Fund - darunter konnte nichts Besseres mehr "
+    "stecken.",
+)
+lm3.metric(
+    "Gestutzt (zu schwer)", f"{live['pruned_infeasible']:,}",
+    help="Äste, die abgebrochen wurden, weil das Gewichtslimit an dieser Stelle bereits "
+    "überschritten war - unabhängig von der Bound.",
+)
+lm4.metric(
+    "Bester Fund bisher", live["current_best"],
+    help="Der beste bislang gefundene, vollständige Kandidat (alle Pakete entschieden) - in "
+    "der Fachsprache der 'Incumbent'. Muss unterwegs nicht der Optimalwert sein, nur das "
+    "bisher Beste.",
+)
 
 st.caption(
-    f"Bewiesenes Optimum: **{result.best_value}** "
+    f"Bewiesenes Optimum: **{result.best_value}** - keine andere Auswahl kann laut vollständiger "
+    f"Suche einen höheren Wert erreichen "
     f"({stats['fraction_of_tree_explored'] * 100:.2f}% des theoretischen 2^n-Baums tatsächlich besucht)."
 )
 
@@ -220,7 +243,8 @@ st.subheader("📐 Wie stark hilft eine gute Bound wirklich?")
 st.markdown(
     """
 Beide Bounds sind mathematisch gültig - keine unterschätzt jemals, was von einer Teillösung
-aus noch erreichbar wäre, Pruning damit in beiden Fällen sicher. Der Unterschied liegt allein
+(einem noch nicht fertig entschiedenen Ast) aus noch erreichbar wäre, das Stutzen ist damit in
+beiden Fällen sicher. Der Unterschied liegt allein
 in der **Schärfe**: eine lockere Bound schneidet seltener ab, selbst wenn das Ergebnis am Ende
 exakt dasselbe ist. Live für Ihre aktuelle Instanz geprüft, nicht nur behauptet:
 """
@@ -232,9 +256,22 @@ weak_nodes = cmp["weak_stats"]["nodes_explored"]
 factor = weak_nodes / strong_nodes if strong_nodes else float("inf")
 
 bc1, bc2, bc3 = st.columns(3)
-bc1.metric("Starke Bound (LP-Relaxierung)", f"{strong_nodes:,} Knoten")
-bc2.metric("Schwache Bound (nur Wertsumme)", f"{weak_nodes:,} Knoten", delta=f"{weak_nodes - strong_nodes:,} ggü. stark", delta_color="inverse")
-bc3.metric("Beide finden denselben Optimalwert", cmp["strong"].best_value)
+bc1.metric(
+    "Starke Bound (LP-Relaxierung)", f"{strong_nodes:,} Knoten",
+    help="Rechnet probeweise mit Bruchteilen eines Pakets - dadurch eng am wirklich "
+    "Erreichbaren dran, schneidet also viele aussichtslose Äste früh ab.",
+)
+bc2.metric(
+    "Schwache Bound (nur Wertsumme)", f"{weak_nodes:,} Knoten",
+    delta=f"{weak_nodes - strong_nodes:,} ggü. stark", delta_color="inverse",
+    help="Addiert einfach alle noch offenen Werte und ignoriert das Gewichtslimit komplett - "
+    "immer noch gültig (unterschätzt nie), aber viel lockerer, schneidet dadurch seltener ab.",
+)
+bc3.metric(
+    "Beide finden denselben Optimalwert", cmp["strong"].best_value,
+    help="Das bewiesen beste Ergebnis - beide Varianten müssen hier übereinstimmen, sie "
+    "unterscheiden sich nur darin, wie viele Knoten sie dafür durchsuchen mussten.",
+)
 
 if factor >= 1.5:
     st.success(
