@@ -30,7 +30,7 @@ an der Bound-Qualität hängt, nicht am Algorithmus selbst.
 
 ## Suchbaum-Visualisierung
 
-Die Knoten-IDs werden in Tiefensuche-Reihenfolge vergeben ("rein" vor "raus", je Ebene ein
+Die Knoten-IDs werden in Tiefensuche-Reihenfolge vergeben ("aufgenommen" vor "ausgelassen", je Ebene ein
 Paket in Wert/Gewicht-Reihenfolge) – ein Animationsschritt ist damit exakt ein besuchter
 Knoten, in der tatsächlichen Suchreihenfolge des Algorithmus, nicht künstlich nachgebaut. Das
 Baum-Layout wird einmal über die vollständige (gerenderte) Knotenmenge berechnet, damit

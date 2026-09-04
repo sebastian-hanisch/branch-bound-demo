@@ -28,16 +28,7 @@ from bb_presets import (
 )
 from bb_scenario import generate_instance
 from bb_solver import solve
-from bb_visualization import STATUS_ORDER, STATUS_STYLE, build_incumbent_chart, build_tree_figure
-
-LEGEND_EMOJI = {
-    "root": "⚫",
-    "branch": "🔵",
-    "prune_bound": "🟠",
-    "prune_infeasible": "⚪",
-    "leaf_new_best": "🟢",
-    "leaf_not_best": "⬜",
-}
+from bb_visualization import build_incumbent_chart, build_tree_figure
 
 st.set_page_config(page_title="Branch & Bound – Sebastian Hanisch", layout="wide")
 
@@ -83,7 +74,8 @@ reichen, um das nachzuvollziehen - sie prägen auch die Farben, in denen der Suc
 unten die einzelnen Knoten einfärbt:
 
 - **Branch (Verzweigen):** an jedem Knoten wird über GENAU EIN weiteres Paket entschieden -
-  "rein" und "raus" werden zu zwei neuen Kind-Knoten.
+  "aufgenommen" und "ausgelassen" werden zu zwei neuen Kind-Knoten (einmal getroffen, wird
+  diese Entscheidung in diesem Zweig nicht mehr rückgängig gemacht).
 - **Bound (Schranke):** für jeden Knoten wird eine **optimistische Obergrenze** berechnet -
   wie gut könnte die beste Vervollständigung von hier aus höchstens werden? Diese Demo bietet
   zwei Varianten: die scharfe **LP-Relaxierung** (bricht die Ganzzahligkeit auf, erlaubt
@@ -102,7 +94,7 @@ innerhalb der Rechenbudget-Grenze gefundene Lösung - diese Demo kennzeichnet di
 ehrlich als "abgebrochen", nie fälschlich als Optimum.
 
 Die Reihenfolge, in der Pakete verzweigt werden (absteigend nach Wert/Gewicht-Verhältnis),
-sowie "rein" vor "raus" sind bewusste, gängige Heuristiken - sie ändern nichts am gefundenen
+sowie "aufgenommen" vor "ausgelassen" sind bewusste, gängige Heuristiken - sie ändern nichts am gefundenen
 Optimum, aber viel daran, wie schnell ein guter Incumbent gefunden wird und wie effektiv
 dadurch früh geprunt werden kann.
         """
@@ -184,9 +176,6 @@ render_note = (
     else ""
 )
 st.caption(f"{len(result.nodes):,} Knoten insgesamt besucht{render_note}.")
-st.caption(
-    "Legende: " + "  ·  ".join(f"{LEGEND_EMOJI[s]} {STATUS_STYLE[s]['label']}" for s in STATUS_ORDER)
-)
 
 step_col, play_col = st.columns([5, 1])
 with step_col:

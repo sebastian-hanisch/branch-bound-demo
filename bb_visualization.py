@@ -45,7 +45,9 @@ def _node_label(node, instance):
         return "Start<br>noch keine Entscheidung"
     item_no = node.item_index + 1
     weight, value = instance.weights[node.item_index], instance.values[node.item_index]
-    decision_txt = f"Item {item_no} REIN (w={weight}, v={value})" if node.decision else f"Item {item_no} RAUS"
+    decision_txt = (
+        f"Item {item_no} AUFGENOMMEN (w={weight}, v={value})" if node.decision else f"Item {item_no} AUSGELASSEN"
+    )
     bound_txt = f"Bound: {node.bound:.1f}" if node.bound is not None else "Bound: -"
     return f"{decision_txt}<br>Gewicht bisher: {node.weight} / {instance.capacity}<br>Wert bisher: {node.value}<br>{bound_txt}"
 
