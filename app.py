@@ -321,13 +321,11 @@ $$
 
 **Schwache Bound** (Vergleichsvariante): $\text{Bound}_{\text{schwach}} = v' + \sum_{i>k} v_i$
 - ignoriert $W'$ komplett, ist damit immer $\ge \text{Bound}_{\text{stark}}$ und schneidet
-entsprechend seltener ab (siehe Tests in [tests/test_bound.py](tests/test_bound.py), die
-diese Ungleichung sowie die Gültigkeit beider Bounds gegen brute-force geprüfte
-Referenzwerte verifizieren).
+entsprechend seltener ab (siehe Tests in `tests/test_bound.py`, die diese Ungleichung sowie
+die Gültigkeit beider Bounds gegen brute-force geprüfte Referenzwerte verifizieren).
 
-Implementiert in [bb_bound.py](bb_bound.py) (Bounds), [bb_solver.py](bb_solver.py)
-(Tiefensuche mit Knoten-Protokoll) und [bb_bruteforce.py](bb_bruteforce.py) (unabhängige
-Referenzlösung für kleine Instanzen).
+Implementiert in `bb_bound.py` (Bounds), `bb_solver.py` (Tiefensuche mit Knoten-Protokoll)
+und `bb_bruteforce.py` (unabhängige Referenzlösung für kleine Instanzen).
         """
     )
 
