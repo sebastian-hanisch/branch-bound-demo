@@ -1,7 +1,7 @@
 # Branch & Bound am Rucksackproblem – Streamlit-Demo
 
 Erstes Stück der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations Research
-und Machine Learning": anders als die übrigen Demos im Portfolio (ein Anwendungsfall, mehrere
+und Machine Learning": anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere
 Verfahren im Vergleich) zeigt diese Demo **ein** Verfahren – Branch & Bound – und lässt
 stattdessen das **Beispiel** wachsen. Vehikel-Problem ist das klassische 0/1-Rucksackproblem,
 bewusst gewählt, weil es der einfachste Lehrfall für Branch & Bound ist und die LP-Relaxierung
@@ -9,10 +9,11 @@ als Bound trivial zu berechnen und zu erklären ist.
 
 ## Warum diese Demo anders aufgebaut ist
 
-Die übrigen Portfolio-Demos beantworten "welches Verfahren löst diesen einen Fall am besten?".
-Diese Demo beantwortet stattdessen "wie verhält sich EIN Verfahren, wenn das Beispiel
-komplexer wird?" – bei 3–4 Paketen passt der komplette Suchbaum aufs Bild und ist Knoten für
-Knoten durchklickbar, bei 20 Paketen macht erst gutes Pruning den Baum überhaupt bezwingbar.
+Die Fall-Demos im Portfolio beantworten "welches Verfahren löst diesen einen Fall am besten?".
+Diese Demo (wie die übrigen Stücke der "Konzepte"-Reihe) beantwortet stattdessen "wie verhält
+sich EIN Verfahren, wenn das Beispiel komplexer wird?" – bei 3–4 Paketen passt der komplette
+Suchbaum aufs Bild und ist Knoten für Knoten durchklickbar, bei 20 Paketen macht erst gutes
+Pruning den Baum überhaupt bezwingbar.
 Genau dieser Kontrast ist der Punkt, nicht ein Methodenvergleich.
 
 Zwei unabhängige Regler steuern, wie schwer die Instanz für Branch & Bound tatsächlich ist:

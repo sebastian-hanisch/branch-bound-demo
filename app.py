@@ -2,7 +2,7 @@
 Branch & Bound am Rucksackproblem – interaktive Konzept-Demo
 Sebastian Hanisch - Operations Research und Machine Learning
 
-Anders als die übrigen Demos im Portfolio (ein Anwendungsfall, mehrere Verfahren im
+Anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere Verfahren im
 Vergleich) zeigt diese Demo EIN Verfahren - Branch & Bound - und lässt stattdessen das
 Beispiel wachsen: von einer Instanz, deren kompletter Suchbaum aufs Bild passt, bis zu
 einer, bei der Pruning über Minuten statt Millisekunden Rechenzeit entscheidet. Erstes
@@ -61,9 +61,10 @@ der aufgeklappte Abschnitt direkt darunter - bevor weiter unten der Suchbaum liv
 """
 )
 st.caption(
-    "Anders als die übrigen Demos im Portfolio, die mehrere Verfahren an einem Fall vergleichen, "
-    "zeigt diese Demo **ein** Verfahren an einem wachsenden Beispiel - dasselbe Prinzip, das "
-    "hinter jedem \"Exakt (OR-Tools)\"-Vergleich im Rest des Portfolios unsichtbar mitläuft."
+    "Anders als die Fall-Demos im Portfolio, die an einem Anwendungsfall mehrere Verfahren "
+    "vergleichen, zeigt diese Demo - Teil der wachsenden \"Konzepte\"-Reihe - **ein** Verfahren "
+    "an einem wachsenden Beispiel: dasselbe Prinzip, das hinter jedem \"Exakt (OR-Tools)\"-"
+    "Vergleich in den Fall-Demos unsichtbar mitläuft."
 )
 
 with st.expander("So funktioniert Branch & Bound", expanded=True):
