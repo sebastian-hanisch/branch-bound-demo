@@ -68,35 +68,29 @@ st.caption(
 with st.expander("So funktioniert Branch & Bound", expanded=True):
     st.markdown(
         """
-Kurz gesagt: **entscheiden, abschätzen, bei Aussichtslosigkeit abbrechen** - wiederholt, bis
-jede der 2ⁿ Möglichkeiten entweder ausprobiert oder nachweisbar überflüssig war. Vier Begriffe
-reichen, um das nachzuvollziehen - sie prägen auch die Farben, in denen der Suchbaum weiter
-unten die einzelnen Knoten einfärbt:
+Stellen Sie sich vor, Sie packen den Lieferwagen Paket für Paket ein und probieren dabei
+systematisch beide Möglichkeiten durch: Paket dabei oder nicht. Nach jeder Teil-Entscheidung
+stellt sich das Verfahren eine einzige Frage, bevor es weitermacht:
 
-- **Branch (Verzweigen):** an jedem Knoten wird über GENAU EIN weiteres Paket entschieden -
-  "aufgenommen" und "ausgelassen" werden zu zwei neuen Kind-Knoten (einmal getroffen, wird
-  diese Entscheidung in diesem Zweig nicht mehr rückgängig gemacht).
-- **Bound (Schranke):** für jeden Knoten wird eine **optimistische Obergrenze** berechnet -
-  wie gut könnte die beste Vervollständigung von hier aus höchstens werden? Diese Demo bietet
-  zwei Varianten: die scharfe **LP-Relaxierung** (bricht die Ganzzahligkeit auf, erlaubt
-  Bruchteile eines Pakets) und eine bewusst **schwache** Variante (ignoriert das Gewicht
-  komplett).
-- **Prune (Stutzen):** ist die Obergrenze eines Knotens schon schlechter oder gleich gut wie
-  der bisher beste GEFUNDENE, VOLLSTÄNDIGE Kandidat (der **Incumbent**), kann darunter
-  garantiert nichts Besseres mehr stecken - der ganze Teilbaum wird übersprungen, ohne ihn
-  einzeln durchzugehen.
-- **Infeasible (Unzulässig):** ein Zweig, der das Gewichtslimit sofort überschreitet, wird
-  ebenfalls sofort verworfen - unabhängig von der Bound.
+> *"Selbst wenn ich ab hier alles Übrige optimistisch noch dazupacke - kann das überhaupt
+> noch besser werden als die beste Lösung, die ich schon kenne?"*
 
-Am Ende bleibt garantiert entweder ein **bewiesenes Optimum** (jeder Teilbaum wurde entweder
-durchsucht oder nachweisbar zu Recht übersprungen) oder, bei sehr großen Instanzen, die beste
-innerhalb der Rechenbudget-Grenze gefundene Lösung - diese Demo kennzeichnet diesen Fall
-ehrlich als "abgebrochen", nie fälschlich als Optimum.
+Lautet die Antwort Nein, bricht dieser gesamte Ast sofort ab - ohne dass darunter noch etwas
+einzeln durchprobiert werden muss. Genau das macht das Verfahren schnell: nicht schlauer raten,
+sondern früh und sicher aussortieren, was ohnehin nicht mehr gewinnen kann.
 
-Die Reihenfolge, in der Pakete verzweigt werden (absteigend nach Wert/Gewicht-Verhältnis),
-sowie "aufgenommen" vor "ausgelassen" sind bewusste, gängige Heuristiken - sie ändern nichts am gefundenen
-Optimum, aber viel daran, wie schnell ein guter Incumbent gefunden wird und wie effektiv
-dadurch früh geprunt werden kann.
+Im Suchbaum weiter unten sehen Sie das automatisch beschriftet:
+
+- **"Verzweigt (weiter untersucht)"** - hier wird noch weiterentschieden.
+- **"Gestutzt (Bound zu schwach)"** - abgebrochen, weil selbst der günstigste Fall keine
+  Verbesserung mehr gebracht hätte.
+- **"Gestutzt (zu schwer)"** - abgebrochen, weil das Gewichtslimit ohnehin schon überschritten ist.
+- **"Neue beste Lösung"** - ein besserer Kandidat als alle bisherigen wurde gefunden.
+
+In der Fachliteratur heißen diese Schritte **Branch** (verzweigen), **Bound** (Schranke
+berechnen) und **Prune** (abschneiden) - daher der Name des Verfahrens. Wie die Schranke genau
+berechnet wird und was am Ende ein bewiesenes Optimum ausmacht, steht im Abschnitt
+"📐 Mathematische Formulierung" weiter unten.
         """
     )
 
