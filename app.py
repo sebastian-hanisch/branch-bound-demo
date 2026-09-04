@@ -28,7 +28,16 @@ from bb_presets import (
 )
 from bb_scenario import generate_instance
 from bb_solver import solve
-from bb_visualization import build_incumbent_chart, build_tree_figure
+from bb_visualization import STATUS_ORDER, STATUS_STYLE, build_incumbent_chart, build_tree_figure
+
+LEGEND_EMOJI = {
+    "root": "⚫",
+    "branch": "🔵",
+    "prune_bound": "🟠",
+    "prune_infeasible": "⚪",
+    "leaf_new_best": "🟢",
+    "leaf_not_best": "⬜",
+}
 
 st.set_page_config(page_title="Branch & Bound – Sebastian Hanisch", layout="wide")
 
@@ -52,15 +61,52 @@ st.title("🌳 Branch & Bound am Rucksackproblem")
 st.markdown(
     """
 Ein Lieferwagen hat ein Gewichtslimit, mehrere Pakete stehen zur Auswahl - welche Auswahl
-maximiert den Gesamtwert, ohne das Limit zu überschreiten? Das klassische **0/1-Rucksackproblem**
-dient hier nur als Vehikel: im Mittelpunkt steht **Branch & Bound**, das Verfahren, das hinter
-jedem "Exakt (OR-Tools)"-Vergleich im übrigen Portfolio unsichtbar mitläuft. Statt mehrere
-Verfahren zu vergleichen, wächst hier das **Beispiel** - von einem Suchbaum, der komplett aufs
-Bild passt, bis zu einem, bei dem nur gutes Pruning ihn überhaupt bezwingbar macht. Details im
-Expander "Wie funktioniert Branch & Bound?" weiter unten, die formale Herleitung im Expander
-"📐 Mathematische Formulierung".
+maximiert den Gesamtwert, ohne das Limit zu überschreiten? Das ist das klassische
+**0/1-Rucksackproblem**, hier nur als greifbares Vehikel für das eigentliche Thema:
+**Branch & Bound**, ein Verfahren, das die beweisbar beste Auswahl findet, ohne alle
+2ⁿ möglichen Ja/Nein-Kombinationen einzeln durchzuprobieren. Genau **wie** das gelingt, erklärt
+der aufgeklappte Abschnitt direkt darunter - bevor weiter unten der Suchbaum live dazu läuft.
 """
 )
+st.caption(
+    "Anders als die übrigen Demos im Portfolio, die mehrere Verfahren an einem Fall vergleichen, "
+    "zeigt diese Demo **ein** Verfahren an einem wachsenden Beispiel - dasselbe Prinzip, das "
+    "hinter jedem \"Exakt (OR-Tools)\"-Vergleich im Rest des Portfolios unsichtbar mitläuft."
+)
+
+with st.expander("So funktioniert Branch & Bound", expanded=True):
+    st.markdown(
+        """
+Kurz gesagt: **entscheiden, abschätzen, bei Aussichtslosigkeit abbrechen** - wiederholt, bis
+jede der 2ⁿ Möglichkeiten entweder ausprobiert oder nachweisbar überflüssig war. Vier Begriffe
+reichen, um das nachzuvollziehen - sie prägen auch die Farben, in denen der Suchbaum weiter
+unten die einzelnen Knoten einfärbt:
+
+- **Branch (Verzweigen):** an jedem Knoten wird über GENAU EIN weiteres Paket entschieden -
+  "rein" und "raus" werden zu zwei neuen Kind-Knoten.
+- **Bound (Schranke):** für jeden Knoten wird eine **optimistische Obergrenze** berechnet -
+  wie gut könnte die beste Vervollständigung von hier aus höchstens werden? Diese Demo bietet
+  zwei Varianten: die scharfe **LP-Relaxierung** (bricht die Ganzzahligkeit auf, erlaubt
+  Bruchteile eines Pakets) und eine bewusst **schwache** Variante (ignoriert das Gewicht
+  komplett).
+- **Prune (Stutzen):** ist die Obergrenze eines Knotens schon schlechter oder gleich gut wie
+  der bisher beste GEFUNDENE, VOLLSTÄNDIGE Kandidat (der **Incumbent**), kann darunter
+  garantiert nichts Besseres mehr stecken - der ganze Teilbaum wird übersprungen, ohne ihn
+  einzeln durchzugehen.
+- **Infeasible (Unzulässig):** ein Zweig, der das Gewichtslimit sofort überschreitet, wird
+  ebenfalls sofort verworfen - unabhängig von der Bound.
+
+Am Ende bleibt garantiert entweder ein **bewiesenes Optimum** (jeder Teilbaum wurde entweder
+durchsucht oder nachweisbar zu Recht übersprungen) oder, bei sehr großen Instanzen, die beste
+innerhalb der Rechenbudget-Grenze gefundene Lösung - diese Demo kennzeichnet diesen Fall
+ehrlich als "abgebrochen", nie fälschlich als Optimum.
+
+Die Reihenfolge, in der Pakete verzweigt werden (absteigend nach Wert/Gewicht-Verhältnis),
+sowie "rein" vor "raus" sind bewusste, gängige Heuristiken - sie ändern nichts am gefundenen
+Optimum, aber viel daran, wie schnell ein guter Incumbent gefunden wird und wie effektiv
+dadurch früh geprunt werden kann.
+        """
+    )
 
 st.caption("🎯 Schnellstart – ein Beispielszenario laden:")
 PRESET_HELP = {
@@ -138,6 +184,9 @@ render_note = (
     else ""
 )
 st.caption(f"{len(result.nodes):,} Knoten insgesamt besucht{render_note}.")
+st.caption(
+    "Legende: " + "  ·  ".join(f"{LEGEND_EMOJI[s]} {STATUS_STYLE[s]['label']}" for s in STATUS_ORDER)
+)
 
 step_col, play_col = st.columns([5, 1])
 with step_col:
@@ -223,39 +272,6 @@ if correlation > 0.7:
     )
 
 st.markdown("---")
-
-with st.expander("Wie funktioniert Branch & Bound?"):
-    st.markdown(
-        """
-Branch & Bound durchsucht systematisch alle 2ⁿ möglichen Ja/Nein-Entscheidungen (nehme
-Paket $i$ mit oder nicht), ohne sie alle einzeln auszuprobieren - der Trick ist, ganze
-Teilbäume überspringen zu können, ohne sie zu durchsuchen:
-
-- **Branch (Verzweigen):** an jedem Knoten wird über GENAU EIN weiteres Paket entschieden -
-  "rein" und "raus" werden zu zwei neuen Kind-Knoten.
-- **Bound (Schranke):** für jeden Knoten wird eine **optimistische Obergrenze** berechnet -
-  wie gut könnte die beste Vervollständigung von hier aus höchstens werden? Diese Demo bietet
-  zwei Varianten: die scharfe **LP-Relaxierung** (bricht die Ganzzahligkeit auf, erlaubt
-  Bruchteile eines Pakets) und eine bewusst **schwache** Variante (ignoriert das Gewicht
-  komplett).
-- **Prune (Stutzen):** ist die Obergrenze eines Knotens schon schlechter oder gleich gut wie
-  der bisher beste GEFUNDENE, VOLLSTÄNDIGE Kandidat (der **Incumbent**), kann darunter
-  garantiert nichts Besseres mehr stecken - der ganze Teilbaum wird übersprungen, ohne ihn
-  einzeln durchzugehen.
-- **Infeasible (Unzulässig):** ein Zweig, der das Gewichtslimit sofort überschreitet, wird
-  ebenfalls sofort verworfen - unabhängig von der Bound.
-
-Am Ende bleibt garantiert entweder ein **bewiesenes Optimum** (jeder Teilbaum wurde entweder
-durchsucht oder nachweisbar zu Recht übersprungen) oder, bei sehr großen Instanzen, die beste
-innerhalb der Rechenbudget-Grenze gefundene Lösung - diese Demo kennzeichnet diesen Fall
-ehrlich als "abgebrochen", nie fälschlich als Optimum.
-
-Die Reihenfolge, in der Pakete verzweigt werden (absteigend nach Wert/Gewicht-Verhältnis),
-sowie "rein" vor "raus" sind bewusste, gängige Heuristiken - sie ändern nichts am gefundenen
-Optimum, aber viel daran, wie schnell ein guter Incumbent gefunden wird und wie effektiv
-dadurch früh geprunt werden kann.
-        """
-    )
 
 with st.expander("📐 Mathematische Formulierung"):
     st.markdown(
