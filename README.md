@@ -7,6 +7,11 @@ stattdessen das **Beispiel** wachsen. Vehikel-Problem ist das klassische 0/1-Ruc
 bewusst gewählt, weil es der einfachste Lehrfall für Branch & Bound ist und die LP-Relaxierung
 als Bound trivial zu berechnen und zu erklären ist.
 
+Die Konzepte-Reihe ist kein linearer Pfad, sondern mehrere unabhängige Linien: diese Demo
+ist der Startpunkt der **Exakte-Suche-Linie** (bislang ihr einziges Stück). Sie steht bewusst
+neben, nicht vor, der **Clustering-Linie** ([k-Means](../kmeans-demo) → geplant DBSCAN →
+geplant HDBSCAN) – die beiden Linien bauen nicht aufeinander auf.
+
 ## Warum diese Demo anders aufgebaut ist
 
 Die Fall-Demos im Portfolio beantworten "welches Verfahren löst diesen einen Fall am besten?".
