@@ -178,7 +178,11 @@ st.caption(f"{len(result.nodes):,} Knoten insgesamt besucht{render_note}.")
 
 step_col, play_col = st.columns([5, 1])
 with step_col:
-    step = st.slider("Schritt (Knoten)", 0, max_step, key="bb_step", help="Ein Schritt = ein besuchter Suchbaum-Knoten, in Besuchsreihenfolge.")
+    if max_step == 0:
+        step = 0
+        st.caption("Nur der Wurzelknoten besucht - kein Regler nötig.")
+    else:
+        step = st.slider("Schritt (Knoten)", 0, max_step, key="bb_step", help="Ein Schritt = ein besuchter Suchbaum-Knoten, in Besuchsreihenfolge.")
 with play_col:
     auto_play = st.button("▶️ Abspielen", use_container_width=True)
 
