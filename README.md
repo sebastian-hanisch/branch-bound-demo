@@ -20,7 +20,11 @@ Stück ist [cutting-planes-demo](../cutting-planes-demo) (Schnittebenen, ein Vor
 Kontrast). Diese beiden Vorläufer **konvergieren** im vierten Stück,
 [branch-cut-demo](../branch-cut-demo): Branch & Cut kombiniert das Verzweigen aus dieser
 Demo mit den Schnitten aus cutting-planes-demo – dieselbe Rolle wie HDBSCAN in der
-Clustering-Linie, nur für die Exakte-Suche-Linie.
+Clustering-Linie, nur für die Exakte-Suche-Linie. Fünftes Stück ist
+[constraint-programming-demo](../constraint-programming-demo) – ein **unabhängiger
+Zweig** ab dieser Demo (keine Fortsetzung/Kontrast/Konvergenz): Constraint-Propagation
+statt LP-Schranken-Vergleich, dieselbe Rolle wie gmm-demo/spectral-demo als unabhängige
+Zweige ab kmeans-demo in der Clustering-Linie.
 
 ## Warum diese Demo anders aufgebaut ist
 
