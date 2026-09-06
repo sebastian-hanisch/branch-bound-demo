@@ -15,7 +15,12 @@ Linien bauen nicht aufeinander auf.
 Zweites Stück der Exakte-Suche-Linie ist [dynamic-programming-demo](../dynamic-programming-demo)
 – bewusst als **Kontrast**, nicht als Fix: dasselbe Rucksackproblem, aber Tabellierung
 überlappender Teilprobleme statt Suchbaum + Schranken, mit einer eigenen, andersartigen
-Schwäche (pseudopolynomiale Abhängigkeit von der Kapazität statt vom Suchbaum).
+Schwäche (pseudopolynomiale Abhängigkeit von der Kapazität statt vom Suchbaum). Drittes
+Stück ist [cutting-planes-demo](../cutting-planes-demo) (Schnittebenen, ein Vorläufer, kein
+Kontrast). Diese beiden Vorläufer **konvergieren** im vierten Stück,
+[branch-cut-demo](../branch-cut-demo): Branch & Cut kombiniert das Verzweigen aus dieser
+Demo mit den Schnitten aus cutting-planes-demo – dieselbe Rolle wie HDBSCAN in der
+Clustering-Linie, nur für die Exakte-Suche-Linie.
 
 ## Warum diese Demo anders aufgebaut ist
 
