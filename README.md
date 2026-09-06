@@ -8,9 +8,14 @@ bewusst gewählt, weil es der einfachste Lehrfall für Branch & Bound ist und di
 als Bound trivial zu berechnen und zu erklären ist.
 
 Die Konzepte-Reihe ist kein linearer Pfad, sondern mehrere unabhängige Linien: diese Demo
-ist der Startpunkt der **Exakte-Suche-Linie** (bislang ihr einziges Stück). Sie steht bewusst
-neben, nicht vor, der **Clustering-Linie** ([k-Means](../kmeans-demo) → geplant DBSCAN →
-geplant HDBSCAN) – die beiden Linien bauen nicht aufeinander auf.
+ist der Startpunkt der **Exakte-Suche-Linie**. Sie steht bewusst neben, nicht vor, der
+**Clustering-Linie** ([k-Means](../kmeans-demo) → ... → [HDBSCAN](../hdbscan-demo)) – die
+Linien bauen nicht aufeinander auf.
+
+Zweites Stück der Exakte-Suche-Linie ist [dynamic-programming-demo](../dynamic-programming-demo)
+– bewusst als **Kontrast**, nicht als Fix: dasselbe Rucksackproblem, aber Tabellierung
+überlappender Teilprobleme statt Suchbaum + Schranken, mit einer eigenen, andersartigen
+Schwäche (pseudopolynomiale Abhängigkeit von der Kapazität statt vom Suchbaum).
 
 ## Warum diese Demo anders aufgebaut ist
 
