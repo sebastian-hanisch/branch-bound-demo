@@ -106,7 +106,7 @@ PRESET_HELP = {
 preset_cols = st.columns(len(C.PRESETS))
 for i, name in enumerate(C.PRESETS.keys()):
     with preset_cols[i]:
-        st.button(name, use_container_width=True, on_click=apply_preset, args=(name,), help=PRESET_HELP[name])
+        st.button(name, width="stretch", on_click=apply_preset, args=(name,), help=PRESET_HELP[name])
 
 st.caption(
     "🔗 Die Adresszeile oben spiegelt Ihre aktuelle Konfiguration wider – einfach kopieren, "
@@ -144,7 +144,7 @@ with st.sidebar:
 
     st.button(
         "🎲 Neue Instanz generieren",
-        use_container_width=True,
+        width="stretch",
         on_click=randomize_seed,
         help="Würfelt einen neuen Zufalls-Seed für Paketgewichte und -werte.",
     )
@@ -184,7 +184,7 @@ with step_col:
     else:
         step = st.slider("Schritt (Knoten)", 0, max_step, key="bb_step", help="Ein Schritt = ein besuchter Suchbaum-Knoten, in Besuchsreihenfolge.")
 with play_col:
-    auto_play = st.button("▶️ Abspielen", use_container_width=True)
+    auto_play = st.button("▶️ Abspielen", width="stretch")
 
 tree_slot = st.empty()
 gap_slot = st.empty()
@@ -193,11 +193,11 @@ gap_slot = st.empty()
 def _render(current_step):
     tree_slot.plotly_chart(
         build_tree_figure(instance, result, current_step, C.MAX_NODES_RENDERED),
-        use_container_width=True, key=f"tree_{current_step}",
+        width="stretch", key=f"tree_{current_step}",
     )
     gap_slot.plotly_chart(
         build_incumbent_chart(result, current_step, result.best_value),
-        use_container_width=True, key=f"gap_{current_step}",
+        width="stretch", key=f"gap_{current_step}",
     )
 
 
