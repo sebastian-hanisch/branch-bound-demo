@@ -1,5 +1,7 @@
 # Branch & Bound am Rucksackproblem – Streamlit-Demo
 
+**[→ Demo live ausprobieren](https://sebastianhanisch-branch-bound-demo.streamlit.app/)**
+
 Erstes Stück der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations Research
 und Machine Learning": anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere
 Verfahren im Vergleich) zeigt diese Demo **ein** Verfahren – Branch & Bound – und lässt
