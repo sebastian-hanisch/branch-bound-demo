@@ -239,7 +239,7 @@ lm4.metric(
 st.caption(
     f"Bewiesenes Optimum: **{result.best_value}** - keine andere Auswahl kann laut vollständiger "
     f"Suche einen höheren Wert erreichen "
-    f"({stats['fraction_of_tree_explored'] * 100:.2f}% des theoretischen 2^n-Baums tatsächlich besucht)."
+    f"({stats['fraction_of_tree_explored'] * 100:.2f}% der 2^(n+1)−1 Knoten des vollständigen Suchbaums tatsächlich besucht)."
 )
 
 st.markdown("---")
@@ -337,6 +337,6 @@ st.markdown("---")
 
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Exakte Suche erklärt: Rucksack und Cutting Stock](https://sebastianhanisch.net/konzepte-exakte-suche.html)."
 )
