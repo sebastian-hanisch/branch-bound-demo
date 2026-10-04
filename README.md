@@ -40,10 +40,14 @@ Genau dieser Kontrast ist der Punkt, nicht ein Methodenvergleich.
 Zwei unabhängige Regler steuern, wie schwer die Instanz für Branch & Bound tatsächlich ist:
 
 - **Anzahl Pakete** – steuert die reine Baumgröße (2ⁿ mögliche Ja/Nein-Kombinationen).
-- **Korrelation Wert/Gewicht** – 0: Wert unabhängig vom Gewicht (leicht zu prunen). 1: Wert ≈
-  Gewicht, die klassische "strongly correlated"-Instanz aus der Rucksack-Literatur (Martello &
-  Toth), bei der fast alle Pakete ein ähnliches Wert/Gewicht-Verhältnis haben und selbst die
-  scharfe LP-Bound relativ weniger hilft – bei gleicher Paketzahl ein spürbar anderer Baum.
+- **Korrelation Wert/Gewicht** – 0: Wert unabhängig vom Gewicht. 1: Wert = Gewicht plus Rauschen
+  (±8): fast alle Pakete haben ein ähnliches Wert/Gewicht-Verhältnis. Das entspricht eher den
+  „weakly correlated"-Instanzen aus Pisingers Katalog (2005) als den „strongly correlated"
+  (Wert = Gewicht + Konstante), die in der Literatur als schwer für Branch & Bound gelten. Gemessen
+  (20 Pakete, Limit 50 %, 40 Seeds): der Faktor schwache/starke Bound liegt im Median bei etwa 240 für
+  Korrelation 0 und bei etwa 640 für 0.95, die starke Bound braucht in beiden Fällen im Median rund
+  90 Knoten – die Korrelation schwächt die LP-Bound in dieser Demo also nicht; nur einzelne Seeds
+  (z. B. Seed 3: 591 gegen 159) zeigen einen kleineren Vorteil.
 
 Zusätzlich ein Umschalter zwischen einer **starken** Bound (LP-Relaxierung, fraktionales
 Rucksackproblem) und einer bewusst **schwachen** Bound (ignoriert das Gewicht komplett) –

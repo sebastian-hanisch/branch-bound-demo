@@ -101,7 +101,7 @@ PRESET_HELP = {
     "Winziges Beispiel (Baum komplett sichtbar)": "4 Pakete - der komplette Suchbaum passt aufs Bild, jeder Knoten einzeln durchklickbar.",
     "Mittlere Instanz (Pruning wird sichtbar)": "10 Pakete - hier beginnt Pruning spürbar den Unterschied zu machen.",
     "Große, unkorrelierte Instanz (starke Bound glänzt)": "20 Pakete, Wert unabhängig vom Gewicht - die LP-Bound schneidet hier fast den ganzen Baum weg.",
-    "Große, korrelierte Instanz (Bound-Vorteil schrumpft)": "20 Pakete, Wert ≈ Gewicht - die LP-Bound hilft hier immer noch deutlich, aber spürbar weniger als bei unabhängigen Werten.",
+    "Große, korrelierte Instanz (Wert ≈ Gewicht)": "20 Pakete, Wert ≈ Gewicht (Korrelation 0.95): in diesem Beispiel (Seed 3) spart die LP-Bound weniger als bei unabhängigen Werten (die schwache Bound durchsucht 159-mal statt 591-mal so viele Knoten wie die starke). Das ist ein Einzelfall: über 40 Seeds (20 Pakete, Limit 50 %) liegt der Median-Faktor bei Korrelation 0.95 mit etwa 640 sogar über dem bei Korrelation 0 (etwa 240); die starke Bound braucht in beiden Fällen im Median rund 90 Knoten.",
 }
 preset_cols = st.columns(len(C.PRESETS))
 for i, name in enumerate(C.PRESETS.keys()):
@@ -125,8 +125,9 @@ with st.sidebar:
     correlation = st.slider(
         "Korrelation Wert/Gewicht", *bounds("correlation_slider"), key="correlation_slider",
         help="0 = Wert unabhängig vom Gewicht (die Bound schneidet hier leicht viele Äste weg). "
-        "1 = wertvolle Pakete sind auch die schweren (klassische 'strongly correlated'-Instanz, "
-        "notorisch schwer für Branch & Bound - selbst eine gute Bound hilft hier weniger).",
+        "1 = wertvolle Pakete sind auch die schweren (Wert = Gewicht plus Rauschen von ±8; in der "
+        "Literatur gelten stark korrelierte Rucksack-Instanzen als schwer für Branch & Bound, hier bleibt die "
+        "LP-Bound aber auch bei 20 Paketen sehr wirksam, siehe Vergleich unten).",
     )
     seed = st.number_input("Zufalls-Seed", *bounds("seed_input"), key="seed_input", step=1)
 
@@ -289,11 +290,11 @@ else:
 
 if correlation > 0.7:
     st.info(
-        "ℹ️ Zum Vergleich: bei Korrelation 0 (Regler links) fällt dieser Faktor auf vergleichbaren "
-        "Instanzen typischerweise deutlich größer aus. Sind Wert und Gewicht stark korreliert, "
-        "haben fast alle Pakete ein ähnliches Wert/Gewicht-Verhältnis - dadurch bleibt selbst die "
-        "scharfe LP-Bound an jedem Knoten näher am tatsächlich Erreichbaren dran, sie hilft also "
-        "relativ gesehen weniger, auch wenn sie absolut meist noch klar überlegen bleibt."
+        "ℹ️ Zum Vergleich: auf vergleichbaren Instanzen (20 Pakete, Gewichtslimit 50 %) liegt dieser "
+        "Faktor über 40 Seeds im Median bei etwa 240 für Korrelation 0 und bei etwa 640 für Korrelation 0.95 - "
+        "stärkere Korrelation macht den Vorteil der LP-Bound hier also nicht kleiner, und die starke Bound "
+        "braucht in beiden Fällen im Median rund 90 Knoten. Pro Instanz schwankt der Faktor stark "
+        "(Seed 3: 591 bei Korrelation 0, 159 bei 0.95)."
     )
 
 st.markdown("---")

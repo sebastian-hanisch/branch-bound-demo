@@ -30,7 +30,7 @@ PRESETS = {
     "Große, unkorrelierte Instanz (starke Bound glänzt)": {
         "n_items": 20, "capacity_fraction": 0.5, "correlation": 0.0, "seed": 3,
     },
-    "Große, korrelierte Instanz (Bound-Vorteil schrumpft)": {
+    "Große, korrelierte Instanz (Wert ≈ Gewicht)": {
         "n_items": 20, "capacity_fraction": 0.5, "correlation": 0.95, "seed": 3,
     },
 }

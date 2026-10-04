@@ -21,9 +21,10 @@ class KnapsackInstance:
 
 def generate_instance(n_items, capacity_fraction, correlation, seed):
     """correlation=0: value independent of weight (easy for the LP bound to
-    prune). correlation=1: value ~= weight (classic "strongly correlated"
-    knapsack instance - notoriously hard to prune, even with the LP bound,
-    because ratio-sorting no longer separates good items from bad ones)."""
+    prune). correlation=1: value ~= weight + noise in [-8, 8] (closer to
+    Pisinger's "weakly correlated" instances than to the classic "strongly
+    correlated" value = weight + constant; measured over 40 seeds the LP bound
+    stays just as effective here as at correlation 0)."""
     rng = np.random.default_rng(seed)
     weights = rng.integers(WEIGHT_RANGE[0], WEIGHT_RANGE[1] + 1, size=n_items)
     uncorrelated_value = rng.integers(VALUE_BASE_RANGE[0], VALUE_BASE_RANGE[1] + 1, size=n_items)
