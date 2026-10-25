@@ -33,8 +33,8 @@ Zweige ab kmeans-demo in der Clustering-Linie.
 Die Fall-Demos im Portfolio beantworten "welches Verfahren löst diesen einen Fall am besten?".
 Diese Demo (wie die übrigen Stücke der "Konzepte"-Reihe) beantwortet stattdessen "wie verhält
 sich EIN Verfahren, wenn das Beispiel komplexer wird?" – bei 3–4 Paketen passt der komplette
-Suchbaum aufs Bild und ist Knoten für Knoten durchklickbar, bei 20 Paketen macht erst gutes
-Pruning den Baum überhaupt bezwingbar.
+Suchbaum aufs Bild und ist Knoten für Knoten durchklickbar, bei 20 Paketen entscheidet die
+Schärfe der Bound darüber, wie viele Knoten besucht werden (Messung weiter unten).
 Genau dieser Kontrast ist der Punkt, nicht ein Methodenvergleich.
 
 Zwei unabhängige Regler steuern, wie schwer die Instanz für Branch & Bound tatsächlich ist:
@@ -47,7 +47,7 @@ Zwei unabhängige Regler steuern, wie schwer die Instanz für Branch & Bound tat
   (20 Pakete, Limit 50 %, 40 Seeds): der Faktor schwache/starke Bound liegt im Median bei etwa 240 für
   Korrelation 0 und bei etwa 640 für 0.95, die starke Bound braucht in beiden Fällen im Median rund
   90 Knoten – die Korrelation schwächt die LP-Bound in dieser Demo also nicht; nur einzelne Seeds
-  (z. B. Seed 3: 591 gegen 159) zeigen einen kleineren Vorteil.
+  (z. B. Seed 3: Faktor 591 bei Korrelation 0, 159 bei 0.95) zeigen einen kleineren Vorteil.
 
 Zusätzlich ein Umschalter zwischen einer **starken** Bound (LP-Relaxierung, fraktionales
 Rucksackproblem) und einer bewusst **schwachen** Bound (ignoriert das Gewicht komplett) –

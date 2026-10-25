@@ -5,7 +5,7 @@ Sebastian Hanisch - Operations Research und Machine Learning
 Anders als die Fall-Demos im Portfolio (ein Anwendungsfall, mehrere Verfahren im
 Vergleich) zeigt diese Demo EIN Verfahren - Branch & Bound - und lässt stattdessen das
 Beispiel wachsen: von einer Instanz, deren kompletter Suchbaum aufs Bild passt, bis zu
-einer, bei der Pruning über Minuten statt Millisekunden Rechenzeit entscheidet. Erstes
+einer, bei der die Schärfe der Bound entscheidet, wie viele Knoten besucht werden. Erstes
 Stück der "Konzepte"-Reihe (siehe README für die Einordnung).
 
 Lauffähig mit: streamlit run app.py
@@ -60,6 +60,17 @@ zurück - keine halben Pakete), hier nur als greifbares Vehikel für das eigentl
 der aufgeklappte Abschnitt direkt darunter - bevor weiter unten der Suchbaum live dazu läuft.
 """
 )
+
+# erklaerseite:einfach:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/branch-and-bound-erklaert.json, nicht von Hand ändern)
+with st.expander("💬 In einfachen Worten"):
+    st.markdown(
+        """
+Stellen Sie sich vor, Sie laden einen Lieferwagen mit Gewichtslimit und wählen aus vielen Paketen die wertvollste Auswahl. Jedes Paket kommt ganz mit oder bleibt zurück, und mit jedem weiteren Paket verdoppelt sich die Zahl der Möglichkeiten. **Branch & Bound** probiert nicht alle durch. Nach jeder Teil-Entscheidung rechnet es optimistisch aus, was ab hier höchstens noch erreichbar wäre. Reicht selbst das nicht, um die beste bekannte Auswahl zu schlagen, wird der ganze Ast gestrichen, ohne dass man darunter noch etwas einzeln prüft. Weil diese Obergrenze nie zu niedrig ist, bleibt am Ende bewiesen, dass nichts Besseres existiert. Wie viele Äste wegfallen, hängt davon ab, wie scharf die Obergrenze ist. Das zeigt der Vergleich von starker und schwacher Bound.
+
+[Ausführlich und verständlich erklärt, mit Fachteil](https://sebastianhanisch.net/branch-and-bound-erklaert.html)
+        """
+    )
+# erklaerseite:einfach:end
 st.caption(
     "Anders als die Fall-Demos im Portfolio, die an einem Anwendungsfall mehrere Verfahren "
     "vergleichen, zeigt diese Demo - Teil der wachsenden \"Konzepte\"-Reihe - **ein** Verfahren "
@@ -101,7 +112,7 @@ PRESET_HELP = {
     "Winziges Beispiel (Baum komplett sichtbar)": "4 Pakete - der komplette Suchbaum passt aufs Bild, jeder Knoten einzeln durchklickbar.",
     "Mittlere Instanz (Pruning wird sichtbar)": "10 Pakete - hier beginnt Pruning spürbar den Unterschied zu machen.",
     "Große, unkorrelierte Instanz (starke Bound glänzt)": "20 Pakete, Wert unabhängig vom Gewicht - die LP-Bound schneidet hier fast den ganzen Baum weg.",
-    "Große, korrelierte Instanz (Wert ≈ Gewicht)": "20 Pakete, Wert ≈ Gewicht (Korrelation 0.95): in diesem Beispiel (Seed 3) spart die LP-Bound weniger als bei unabhängigen Werten (die schwache Bound durchsucht 159-mal statt 591-mal so viele Knoten wie die starke). Das ist ein Einzelfall: über 40 Seeds (20 Pakete, Limit 50 %) liegt der Median-Faktor bei Korrelation 0.95 mit etwa 640 sogar über dem bei Korrelation 0 (etwa 240); die starke Bound braucht in beiden Fällen im Median rund 90 Knoten.",
+    "Große, korrelierte Instanz (Wert ≈ Gewicht)": "20 Pakete, Wert ≈ Gewicht (Korrelation 0.95): in diesem Beispiel (Seed 3) spart die LP-Bound weniger als bei unabhängigen Werten (Faktor schwache/starke Bound bei Seed 3: 591 bei Korrelation 0, nur 159 bei Korrelation 0.95). Das ist ein Einzelfall: über 40 Seeds (20 Pakete, Limit 50 %) liegt der Median-Faktor bei Korrelation 0.95 mit etwa 640 sogar über dem bei Korrelation 0 (etwa 240); die starke Bound braucht in beiden Fällen im Median rund 90 Knoten.",
 }
 preset_cols = st.columns(len(C.PRESETS))
 for i, name in enumerate(C.PRESETS.keys()):
@@ -300,6 +311,27 @@ if correlation > 0.7:
 st.markdown("---")
 
 with st.expander("📐 Mathematische Formulierung"):
+    # erklaerseite:lesehilfe:start (erzeugt von tools/set_demo_explainer.py (Website-Repo) aus tools/content/explainers/branch-and-bound-erklaert.json, nicht von Hand ändern)
+    st.markdown(
+        r"""
+**Lesehilfe.** Gegeben sind Pakete mit Gewichten $w_i$ und Werten $v_i$ sowie ein Gewichtslimit $W$. Gesucht ist die Auswahl mit dem größten Gesamtwert, die das Limit einhält, samt Beweis, dass keine bessere existiert.
+
+| Symbol | Bedeutung |
+|---|---|
+| $i$, $n$ | Nummer eines Pakets, Zahl der Pakete |
+| $w_i$, $v_i$ | Gewicht und Wert von Paket $i$ |
+| $W$ | Gewichtslimit des Lieferwagens |
+| $x_i \in \{0,1\}$ | Entscheidung zu Paket $i$ (1 = kommt mit, 0 = bleibt zurück) |
+| $k$ | Index, bis zu dem an einem Knoten des Suchbaums schon entschieden ist |
+| $W'$, $v'$ | verbleibendes Gewichtslimit und bereits sicherer Wert an diesem Knoten |
+| $x_i \in [0,1]$ | erlaubter Bruchteil von Paket $i$ in der Schranke (nur zum Rechnen, nicht in der Lösung) |
+| $\text{Bound}_{\text{stark}}$ | Schranke mit Bruchteilen (LP-Relaxierung): obere Grenze für alles, was ab dem Knoten noch erreichbar ist |
+| $\text{Bound}_{\text{schwach}}$ | lockere Vergleichsschranke, die das Gewichtslimit ignoriert |
+
+[Schritt für Schritt erklärt, mit Herleitung und Literatur](https://sebastianhanisch.net/branch-and-bound-erklaert.html#fachleute)
+        """
+    )
+    # erklaerseite:lesehilfe:end
     st.markdown(
         r"""
 **0/1-Rucksackproblem:** gegeben $n$ Pakete mit Gewichten $w_i$ und Werten $v_i$ sowie ein
